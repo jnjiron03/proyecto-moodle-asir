@@ -169,6 +169,7 @@ En VMware creo una nueva VM en modo **Custom (Advanced)** con los siguientes rec
 Asigno el nombre `moodle-server` a la VM, asocio la ISO de Ubuntu Server descargada y arranco la instalación.
 
 ![Figura 1 — Configuración de hardware de la máquina virtual](imagenes/reto-02/figura-01.png)
+
 *Figura 1 — Configuración de hardware de la máquina virtual.*
 
 #### Instalación de Ubuntu Server
