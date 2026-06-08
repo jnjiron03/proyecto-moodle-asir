@@ -21,7 +21,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | Nº | Reto | Estado |
 |---|---|---|
 | 01 | [Preparación del entorno de virtualización corporativo](#reto-01--preparación-del-entorno-de-virtualización-corporativo) | ✅ Completado |
-| 02 | [Despliegue y configuración inicial del servidor Ubuntu Server](#reto-02--despliegue-y-configuración-inicial-del-servidor-ubuntu-server) | ⏳ Pendiente |
+| 02 | [Despliegue y configuración inicial del servidor Ubuntu Server](#reto-02--despliegue-y-configuración-inicial-del-servidor-ubuntu-server) | ✅ Completado |
 | 03 | [Implementación de recurso compartido corporativo mediante Samba](#reto-03--implementación-de-recurso-compartido-corporativo-mediante-samba) | ⏳ Pendiente |
 | 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ⏳ Pendiente |
 | 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ⏳ Pendiente |
@@ -122,8 +122,6 @@ Las máquinas virtuales permiten desplegar y destruir entornos de prueba rápida
 - [x] Virtual Network Editor abierto y tipos de red identificados.
 
 ---
-
-## Reto 02 — Despliegue y configuración inicial del servidor Ubuntu Server
 
 ## Reto 02 — Despliegue y configuración inicial del servidor Ubuntu Server
 
