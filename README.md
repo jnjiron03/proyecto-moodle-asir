@@ -125,7 +125,148 @@ Las máquinas virtuales permiten desplegar y destruir entornos de prueba rápida
 
 ## Reto 02 — Despliegue y configuración inicial del servidor Ubuntu Server
 
-> ⏳ *Pendiente de realización.*
+## Reto 02 — Despliegue y configuración inicial del servidor Ubuntu Server
+
+### Introducción
+
+En este reto creo y configuro la máquina virtual que actuará como servidor base de todo el proyecto. Sobre ella instalo Ubuntu Server, establezco una IP estática mediante Netplan y habilito el acceso remoto por SSH. Al finalizar, el servidor queda completamente operativo y listo para recibir los servicios de Moodle en los retos siguientes.
+
+### Objetivos
+
+- Crear la VM en VMware con los recursos adecuados para un LMS pequeño.
+- Instalar Ubuntu Server configurando hostname, usuario y red.
+- Asignar una IP estática al servidor mediante Netplan.
+- Habilitar y verificar el acceso remoto por SSH.
+- Confirmar conectividad desde el equipo anfitrión.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Hipervisor | VMware Workstation 17 Pro |
+| SO invitado | Ubuntu Server 22.04 LTS |
+| RAM | 4 GB |
+| CPU | 2 núcleos |
+| Disco | 40 GB |
+| Red | Adaptador puente (Bridge) |
+| Equipo anfitrión | Windows 10/11 |
+
+### Desarrollo
+
+#### Descarga de la ISO de Ubuntu Server
+
+Accedo a [https://ubuntu.com/download/server](https://ubuntu.com/download/server) y descargo la imagen **Ubuntu Server 22.04 LTS**. La guardo en una ubicación accesible desde el equipo anfitrión.
+
+#### Creación de la máquina virtual en VMware
+
+En VMware creo una nueva VM en modo **Custom (Advanced)** con los siguientes recursos:
+
+| Recurso | Configuración |
+|---|---|
+| RAM | 4096 MB (4 GB) |
+| CPU | 2 núcleos |
+| Disco | 40 GB (SCSI) |
+| Red | Bridged (adaptador puente) |
+
+Asigno el nombre `moodle-server` a la VM, asocio la ISO de Ubuntu Server descargada y arranco la instalación.
+
+![Figura 1 — Configuración de hardware de la máquina virtual](imagenes/reto-02/figura-01.png)
+*Figura 1 — Configuración de hardware de la máquina virtual.*
+
+#### Instalación de Ubuntu Server
+
+Durante el proceso de instalación realizo las siguientes configuraciones:
+
+- **Idioma y teclado** según la región.
+- **Tipo de instalación:** Ubuntu Server estándar.
+- **Hostname:** `moodle-server`.
+- **Usuario administrador:** nombre de usuario y contraseña definidos para el proyecto.
+- **OpenSSH:** marcada la casilla de instalación automática ✅.
+- **Snaps adicionales:** ninguno — los servicios se instalan manualmente en retos posteriores.
+
+![Figura 2 — Configuración del hostname durante la instalación](imagenes/reto-02/figura-02.png)
+*Figura 2 — Configuración del hostname durante la instalación.*
+
+![Figura 3 — Ubuntu Server instalado y primer acceso por consola](imagenes/reto-02/figura-03.png)
+*Figura 3 — Ubuntu Server instalado y primer acceso por consola.*
+
+#### Configuración de IP estática con Netplan
+
+Ubuntu Server gestiona la red mediante **Netplan**. Identifico primero el nombre de la interfaz con `ip a` y edito el archivo de configuración:
+
+```bash
+sudo nano /etc/netplan/00-installer-config.yaml
+```
+
+```yaml
+network:
+  version: 2
+  renderer: networkd
+  ethernets:
+    ens33:
+      dhcp4: no
+      addresses:
+        - 192.168.1.100/24
+      routes:
+        - to: default
+          via: 192.168.1.1
+      nameservers:
+        addresses: [8.8.8.8, 1.1.1.1]
+```
+
+Aplico la configuración:
+
+```bash
+sudo netplan apply
+```
+
+![Figura 4 — Configuración de IP estática mediante Netplan](imagenes/reto-02/figura-04.png)
+*Figura 4 — Configuración de IP estática mediante Netplan.*
+
+#### Verificación de la IP estática
+
+Compruebo que la IP estática ha sido aplicada correctamente:
+
+```bash
+ip a
+```
+
+![Figura 5 — IP estática configurada y visible con ip a](imagenes/reto-02/figura-05.png)
+*Figura 5 — IP estática configurada y visible con `ip a`.*
+
+#### Verificación de conectividad a Internet
+
+Desde el servidor compruebo conectividad al exterior y resolución de nombres:
+
+```bash
+ping -c 4 8.8.8.8
+ping -c 4 google.com
+```
+
+![Figura 6 — Prueba de conectividad a Internet desde el servidor](imagenes/reto-02/figura-06.png)
+*Figura 6 — Prueba de conectividad a Internet desde el servidor.*
+
+#### Acceso remoto por SSH desde el equipo anfitrión
+
+Desde PowerShell en el equipo anfitrión me conecto al servidor:
+
+```bash
+ssh jorge@192.168.1.100
+```
+
+La conexión se establece correctamente, confirmando que OpenSSH está operativo y el servidor es administrable de forma remota.
+
+![Figura 7 — Acceso remoto al servidor mediante SSH desde el equipo anfitrión](imagenes/reto-02/figura-07.png)
+*Figura 7 — Acceso remoto al servidor mediante SSH desde el equipo anfitrión.*
+
+### Comprobaciones finales
+
+- [x] VM creada con 4 GB RAM, 2 núcleos, 40 GB disco y red Bridge.
+- [x] Ubuntu Server instalado con hostname `moodle-server`.
+- [x] Usuario administrador creado.
+- [x] IP estática configurada y visible con `ip a`.
+- [x] Ping al exterior responde correctamente.
+- [x] OpenSSH operativo y acceso remoto verificado desde el host.
 
 ---
 
