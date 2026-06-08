@@ -277,7 +277,174 @@ La conexión se establece correctamente, confirmando que OpenSSH está operativo
 
 ## Reto 03 — Implementación de recurso compartido corporativo mediante Samba
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+En este reto habilito un recurso compartido en red dentro del servidor Ubuntu Server utilizando Samba, un servicio que permite compartir carpetas entre sistemas Linux, Windows y macOS dentro de la misma red local. El recurso `codearts-share` servirá como punto de intercambio de archivos entre el servidor y el equipo anfitrión durante todo el proyecto.
+
+### Objetivos
+
+- Instalar y configurar el servicio Samba en Ubuntu Server.
+- Crear la carpeta corporativa `/srv/codearts-share` con los permisos adecuados.
+- Publicar el recurso compartido con el nombre `codearts-share`.
+- Verificar que el servicio está activo y el recurso es accesible desde Windows.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Servicio | Samba |
+| Carpeta compartida | `/srv/codearts-share` |
+| Nombre del recurso | `codearts-share` |
+| Acceso desde | Windows (equipo anfitrión) |
+
+### Desarrollo
+
+#### Actualización del sistema e instalación de Samba
+
+Actualizo los repositorios del sistema antes de instalar cualquier servicio:
+
+```bash
+sudo apt update && sudo apt upgrade -y
+```
+
+Instalo el paquete de Samba:
+
+```bash
+sudo apt install samba -y
+```
+
+Verifico que la instalación se ha completado correctamente comprobando la versión del demonio instalado:
+
+```bash
+smbd --version
+```
+
+![Figura 1 — Instalación de Samba en Ubuntu Server](imagenes/reto-03/figura-01.png)
+*Figura 1 — Instalación de Samba en Ubuntu Server.*
+
+#### Creación de la carpeta compartida corporativa
+
+Creo el directorio obligatorio del proyecto en la ruta indicada:
+
+```bash
+sudo mkdir -p /srv/codearts-share
+```
+
+Asigno el propietario y los permisos necesarios para que el usuario pueda leer y escribir dentro de la carpeta:
+
+```bash
+sudo chown -R jorge:jorge /srv/codearts-share
+sudo chmod 777 /srv/codearts-share
+```
+
+Verifico que la carpeta existe con los permisos correctos:
+
+```bash
+ls -ld /srv/codearts-share
+```
+
+![Figura 2 — Creación de la carpeta /srv/codearts-share con permisos correctos](imagenes/reto-03/figura-02.png)
+*Figura 2 — Creación de la carpeta `/srv/codearts-share` con permisos correctos.*
+
+#### Configuración de Samba
+
+Realizo una copia de seguridad del archivo de configuración original antes de modificarlo:
+
+```bash
+sudo cp /etc/samba/smb.conf /etc/samba/smb.conf.bak
+```
+
+Edito el archivo de configuración y añado el bloque del recurso compartido al final:
+
+```bash
+sudo nano /etc/samba/smb.conf
+```
+
+```ini
+[codearts-share]
+   path = /srv/codearts-share
+   browseable = yes
+   read only = no
+   guest ok = no
+   valid users = jorge
+   force user = jorge
+   create mask = 0664
+   directory mask = 0775
+```
+
+Verifico que la sintaxis del archivo es correcta:
+
+```bash
+testparm
+```
+
+![Figura 3 — Configuración del recurso compartido en smb.conf](imagenes/reto-03/figura-03.png)
+*Figura 3 — Configuración del recurso compartido en `smb.conf`.*
+
+#### Registro del usuario Samba y apertura del firewall
+
+Registro el usuario `jorge` en el sistema de contraseñas de Samba y lo activo:
+
+```bash
+sudo smbpasswd -a jorge
+sudo smbpasswd -e jorge
+```
+
+Permito el tráfico de Samba a través del firewall:
+
+```bash
+sudo ufw allow samba
+sudo ufw status
+```
+
+#### Reinicio y verificación del servicio Samba
+
+Reinicio los servicios de Samba para aplicar la configuración y compruebo que están activos:
+
+```bash
+sudo systemctl restart smbd nmbd
+sudo systemctl status smbd
+```
+
+![Figura 4 — Servicio Samba activo y en ejecución](imagenes/reto-03/figura-04.png)
+*Figura 4 — Servicio Samba activo y en ejecución.*
+
+#### Acceso al recurso compartido desde Windows
+
+Desde el equipo anfitrión Windows abro el Explorador de archivos e introduzco en la barra de direcciones:
+
+```
+\\192.168.1.13\codearts-share
+```
+
+Introduzco las credenciales del usuario Samba cuando se solicitan. La carpeta compartida se abre correctamente.
+
+![Figura 5 — Acceso al recurso compartido desde el equipo anfitrión Windows](imagenes/reto-03/figura-05.png)
+*Figura 5 — Acceso al recurso compartido desde el equipo anfitrión Windows.*
+
+#### Prueba de escritura en el recurso compartido
+
+Creo un archivo de prueba desde Windows dentro de la carpeta compartida y verifico desde el servidor que ha aparecido correctamente:
+
+```bash
+ls -l /srv/codearts-share
+```
+
+![Figura 6 — Archivo de prueba creado desde Windows visible en el servidor](imagenes/reto-03/figura-06.png)
+*Figura 6 — Archivo de prueba creado desde Windows visible en el servidor.*
+
+### Comprobaciones finales
+
+- [x] Samba instalado correctamente en Ubuntu Server.
+- [x] Carpeta `/srv/codearts-share` creada con propietario y permisos adecuados.
+- [x] Bloque `[codearts-share]` añadido a `smb.conf` sin errores de sintaxis.
+- [x] Usuario Samba registrado y activo.
+- [x] Firewall permite tráfico Samba.
+- [x] Servicio `smbd` activo y en ejecución.
+- [x] Recurso accesible desde Windows mediante `\\192.168.1.13\codearts-share`.
+- [x] Escritura de archivos verificada desde ambos extremos.
 
 ---
 
