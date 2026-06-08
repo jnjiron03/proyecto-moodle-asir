@@ -322,6 +322,7 @@ smbd --version
 ```
 
 ![Figura 1 — Instalación de Samba en Ubuntu Server](imagenes/reto-03/figura-01.png)
+
 *Figura 1 — Instalación de Samba en Ubuntu Server.*
 
 #### Creación de la carpeta compartida corporativa
@@ -346,6 +347,7 @@ ls -ld /srv/codearts-share
 ```
 
 ![Figura 2 — Creación de la carpeta /srv/codearts-share con permisos correctos](imagenes/reto-03/figura-02.png)
+
 *Figura 2 — Creación de la carpeta `/srv/codearts-share` con permisos correctos.*
 
 #### Configuración de Samba
@@ -381,6 +383,7 @@ testparm
 ```
 
 ![Figura 3 — Configuración del recurso compartido en smb.conf](imagenes/reto-03/figura-03.png)
+
 *Figura 3 — Configuración del recurso compartido en `smb.conf`.*
 
 #### Registro del usuario Samba y apertura del firewall
@@ -409,6 +412,7 @@ sudo systemctl status smbd
 ```
 
 ![Figura 4 — Servicio Samba activo y en ejecución](imagenes/reto-03/figura-04.png)
+
 *Figura 4 — Servicio Samba activo y en ejecución.*
 
 #### Acceso al recurso compartido desde Windows
@@ -422,6 +426,7 @@ Desde el equipo anfitrión Windows abro el Explorador de archivos e introduzco e
 Introduzco las credenciales del usuario Samba cuando se solicitan. La carpeta compartida se abre correctamente.
 
 ![Figura 5 — Acceso al recurso compartido desde el equipo anfitrión Windows](imagenes/reto-03/figura-05.png)
+
 *Figura 5 — Acceso al recurso compartido desde el equipo anfitrión Windows.*
 
 #### Prueba de escritura en el recurso compartido
@@ -433,6 +438,7 @@ ls -l /srv/codearts-share
 ```
 
 ![Figura 6 — Archivo de prueba creado desde Windows visible en el servidor](imagenes/reto-03/figura-06.png)
+
 *Figura 6 — Archivo de prueba creado desde Windows visible en el servidor.*
 
 ### Comprobaciones finales
