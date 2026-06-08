@@ -184,9 +184,11 @@ Durante el proceso de instalación realizo las siguientes configuraciones:
 - **Snaps adicionales:** ninguno — los servicios se instalan manualmente en retos posteriores.
 
 ![Figura 2 — Configuración del hostname durante la instalación](imagenes/reto-02/figura-02.png)
+
 *Figura 2 — Configuración del hostname durante la instalación.*
 
 ![Figura 3 — Ubuntu Server instalado y primer acceso por consola](imagenes/reto-02/figura-03.png)
+
 *Figura 3 — Ubuntu Server instalado y primer acceso por consola.*
 
 #### Configuración de IP estática con Netplan
@@ -220,6 +222,7 @@ sudo netplan apply
 ```
 
 ![Figura 4 — Configuración de IP estática mediante Netplan](imagenes/reto-02/figura-04.png)
+
 *Figura 4 — Configuración de IP estática mediante Netplan.*
 
 #### Verificación de la IP estática
@@ -231,6 +234,7 @@ ip a
 ```
 
 ![Figura 5 — IP estática configurada y visible con ip a](imagenes/reto-02/figura-05.png)
+
 *Figura 5 — IP estática configurada y visible con `ip a`.*
 
 #### Verificación de conectividad a Internet
@@ -243,6 +247,7 @@ ping -c 4 google.com
 ```
 
 ![Figura 6 — Prueba de conectividad a Internet desde el servidor](imagenes/reto-02/figura-06.png)
+
 *Figura 6 — Prueba de conectividad a Internet desde el servidor.*
 
 #### Acceso remoto por SSH desde el equipo anfitrión
@@ -256,6 +261,7 @@ ssh jorge@192.168.1.100
 La conexión se establece correctamente, confirmando que OpenSSH está operativo y el servidor es administrable de forma remota.
 
 ![Figura 7 — Acceso remoto al servidor mediante SSH desde el equipo anfitrión](imagenes/reto-02/figura-07.png)
+
 *Figura 7 — Acceso remoto al servidor mediante SSH desde el equipo anfitrión.*
 
 ### Comprobaciones finales
