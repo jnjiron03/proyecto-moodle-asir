@@ -22,7 +22,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 |---|---|---|
 | 01 | [Preparación del entorno de virtualización corporativo](#reto-01--preparación-del-entorno-de-virtualización-corporativo) | ✅ Completado |
 | 02 | [Despliegue y configuración inicial del servidor Ubuntu Server](#reto-02--despliegue-y-configuración-inicial-del-servidor-ubuntu-server) | ✅ Completado |
-| 03 | [Implementación de recurso compartido corporativo mediante Samba](#reto-03--implementación-de-recurso-compartido-corporativo-mediante-samba) | ⏳ Pendiente |
+| 03 | [Implementación de recurso compartido corporativo mediante Samba](#reto-03--implementación-de-recurso-compartido-corporativo-mediante-samba) | ✅ Completado |
 | 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ⏳ Pendiente |
 | 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ⏳ Pendiente |
 | 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) | ⏳ Pendiente |
