@@ -62,35 +62,35 @@ En este primer reto preparo el entorno de virtualización que utilizaré durante
 
 ### Desarrollo
 
-#### Paso 1 — Verificar que el procesador soporta virtualización
+#### Verificar que el procesador soporta virtualización
 
 Antes de instalar VMware compruebo que mi CPU tiene activada la virtualización por hardware desde el Administrador de tareas (`Ctrl + Shift + Esc`) → pestaña **Rendimiento → CPU**, donde debe aparecer **Virtualización: Habilitada**.
 
 ![Figura 1 — Virtualización habilitada en el procesador del equipo anfitrión](imagenes/reto-01/figura-01.png)  
 *Figura 1 — Virtualización habilitada en el procesador del equipo anfitrión.*
 
-#### Paso 2 — Instalar VMware Workstation 17 Pro
+#### Instalar VMware Workstation 17 Pro
 
 Descargo el instalador desde la web oficial de VMware/Broadcom y lo ejecuto como administrador. Sigo el asistente aceptando la licencia, dejando la ruta por defecto y activando el **Enhanced Keyboard Driver** para mejorar la compatibilidad con el teclado dentro de las VMs.
 
 ![Figura 2 — Instalación de VMware Workstation 17 Pro completada](imagenes/reto-01/figura-02.png)  
 *Figura 2 — Instalación de VMware Workstation 17 Pro completada.*
 
-#### Paso 3 — Verificar que VMware arranca correctamente
+#### Verificar que VMware arranca correctamente
 
 Abro VMware Workstation 17 Pro desde el escritorio y compruebo que se muestra la pantalla principal sin errores, con las opciones de creación y gestión de máquinas virtuales disponibles.
 
 ![Figura 3 — Pantalla principal del hipervisor VMware Workstation 17 Pro](imagenes/reto-01/figura-03.png)  
 *Figura 3 — Pantalla principal del hipervisor VMware Workstation 17 Pro.*
 
-#### Paso 4 — Explorar el menú de creación de máquinas virtuales
+#### Explorar el menú de creación de máquinas virtuales
 
 Accedo al asistente de creación de nueva VM (`Ctrl + N`) y observo las opciones disponibles: **Typical** para una configuración guiada simplificada y **Custom (Advanced)** para control total del hardware virtual.
 
 ![Figura 4 — Menú de creación de máquinas virtuales en VMware](imagenes/reto-01/figura-04.png)  
 *Figura 4 — Menú de creación de máquinas virtuales en VMware.*
 
-#### Paso 5 — Revisar las opciones de red virtual
+#### Revisar las opciones de red virtual
 
 Accedo a **Edit → Virtual Network Editor** y reviso los tres tipos de red disponibles:
 
