@@ -25,7 +25,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 03 | [Implementación de recurso compartido corporativo mediante Samba](#reto-03--implementación-de-recurso-compartido-corporativo-mediante-samba) | ✅ Completado |
 | 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ✅ Completado |
 | 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ✅ Completado |
-| 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) | ⏳ Pendiente |
+| 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) |✅ Completado |
 | 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ⏳ Pendiente |
 | 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ⏳ Pendiente |
 | 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ⏳ Pendiente |
@@ -695,7 +695,125 @@ sudo rm /var/www/html/info.php
 
 ## Reto 06 — Implantación y securización inicial de MariaDB
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+MariaDB será el motor de base de datos que almacenará toda la información del LMS Moodle: usuarios, cursos, calificaciones y contenidos. En este reto instalo el servicio, lo configuro para que arranque automáticamente con el sistema y aplico la securización inicial básica para eliminar configuraciones inseguras por defecto que MariaDB trae al instalarse.
+
+### Objetivos
+
+- Instalar MariaDB en Ubuntu Server.
+- Configurar el arranque automático del servicio.
+- Ejecutar la securización inicial con `mariadb-secure-installation`.
+- Verificar el acceso administrativo al motor de base de datos.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Motor de base de datos | MariaDB |
+| Puerto | 3306 |
+
+### Desarrollo
+
+#### Instalación de MariaDB
+
+Actualizo los repositorios e instalo el servidor MariaDB:
+
+```bash
+sudo apt update && sudo apt install mariadb-server -y
+```
+
+![Figura 1 — Instalación de MariaDB en Ubuntu Server](imagenes/reto-06/figura-01.png)
+
+*Figura 1 — Instalación de MariaDB en Ubuntu Server.*
+
+#### Habilitación del arranque automático y verificación del servicio
+
+Configuro MariaDB para que se inicie automáticamente con el sistema y compruebo que está activo:
+
+```bash
+sudo systemctl enable mariadb
+sudo systemctl status mariadb
+```
+
+![Figura 2 — Servicio MariaDB activo y configurado para arranque automático](imagenes/reto-06/figura-02.png)
+
+*Figura 2 — Servicio MariaDB activo y configurado para arranque automático.*
+
+#### Securización inicial del servidor MariaDB
+
+Ejecuto el asistente de securización inicial. En versiones modernas de MariaDB el comando correcto es:
+
+```bash
+sudo mariadb-secure-installation
+```
+
+Durante el proceso aplico las siguientes medidas de seguridad:
+
+| Pregunta | Respuesta aplicada |
+|---|---|
+| Enter current password for root | `Enter` (sin contraseña por defecto) |
+| Switch to unix_socket authentication | `n` |
+| Change the root password | `y` → contraseña segura configurada |
+| Remove anonymous users | `y` |
+| Disallow root login remotely | `y` |
+| Remove test database and access to it | `y` |
+| Reload privilege tables now | `y` |
+
+![Figura 3 — Ejecución del proceso de securización inicial de MariaDB](imagenes/reto-06/figura-03.png)
+
+*Figura 3 — Ejecución del proceso de securización inicial de MariaDB.*
+
+#### Verificación del acceso administrativo
+
+Accedo al motor de base de datos con el usuario root para confirmar que la autenticación funciona correctamente:
+
+```bash
+sudo mysql -u root -p
+```
+
+Una vez dentro, ejecuto una consulta básica para verificar el estado del sistema:
+
+```sql
+SHOW DATABASES;
+```
+
+La base de datos `test` no aparece en el listado, confirmando que la securización se aplicó correctamente. Salgo del entorno:
+
+```sql
+EXIT;
+```
+
+![Figura 4 — Acceso administrativo a MariaDB y verificación de bases de datos](imagenes/reto-06/figura-04.png)
+
+*Figura 4 — Acceso administrativo a MariaDB y verificación de bases de datos.*
+
+#### Validaciones adicionales del servicio
+
+Verifico que MariaDB está escuchando en el puerto correcto y compruebo la versión instalada:
+
+```bash
+sudo ss -tlnp | grep 3306
+mysql --version
+```
+
+![Figura 5 — Validación del puerto 3306 y versión de MariaDB instalada](imagenes/reto-06/figura-05.png)
+
+*Figura 5 — Validación del puerto 3306 y versión de MariaDB instalada.*
+
+### Comprobaciones finales
+
+- [x] MariaDB instalado correctamente.
+- [x] Servicio activo y configurado para arranque automático.
+- [x] `mariadb-secure-installation` ejecutado con todas las medidas aplicadas.
+- [x] Contraseña de root configurada.
+- [x] Usuarios anónimos eliminados.
+- [x] Acceso root remoto desactivado.
+- [x] Base de datos `test` eliminada.
+- [x] Acceso administrativo verificado con `SHOW DATABASES;`.
+- [x] Puerto 3306 activo y escuchando correctamente.
 
 ---
 
