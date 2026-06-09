@@ -27,7 +27,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ✅ Completado |
 | 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) |✅ Completado |
 | 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ✅ Completado|
-| 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ⏳ Pendiente |
+| 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ✅ Completado |
 | 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ⏳ Pendiente |
 | 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ⏳ Pendiente |
 | 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ⏳ Pendiente |
@@ -942,10 +942,97 @@ Solo aparecen `moodle_db` e `information_schema`, confirmando que el usuario no 
 - [x] `moodle_user` no tiene visibilidad sobre otras bases de datos del sistema.
 
 ---
-
 ## Reto 08 — Configuración de resolución de nombres local para el LMS corporativo
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Hasta ahora el acceso al servidor se realizaba mediante la IP `192.168.1.13`. En este reto configuro el archivo `hosts` del equipo anfitrión Windows para que el nombre `moodle.local` resuelva directamente hacia esa IP sin necesidad de un servidor DNS. Esto permite acceder al LMS de forma más profesional e identificativa dentro de la red corporativa.
+
+### Objetivos
+
+- Identificar la IP estática del servidor Ubuntu.
+- Editar el archivo `hosts` del equipo anfitrión Windows.
+- Asociar `moodle.local` a la IP `192.168.1.13`.
+- Verificar la resolución desde terminal con `ping`.
+- Confirmar el acceso web desde el navegador mediante `http://moodle.local`.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Nombre local corporativo | `moodle.local` |
+| Archivo a modificar | `C:\Windows\System32\drivers\etc\hosts` |
+| Sistema anfitrión | Windows 10/11 |
+
+### Desarrollo
+
+#### Confirmación de la IP estática del servidor
+
+Desde el servidor verifico que la IP estática sigue correctamente configurada:
+
+```bash
+ip a
+```
+
+Confirmo que la interfaz `ens33` tiene asignada la IP `192.168.1.13`.
+
+![Figura 1 — IP estática del servidor confirmada](imagenes/reto-08/figura-01.png)
+
+*Figura 1 — IP estática del servidor confirmada.*
+
+#### Edición del archivo hosts en Windows
+
+El archivo `hosts` de Windows permite asociar nombres a IPs de forma local sin necesidad de DNS. Para editarlo abro el **Bloc de notas como administrador**, navego a `C:\Windows\System32\drivers\etc\` y abro el archivo `hosts` seleccionando **Todos los archivos** en el filtro.
+
+Al final del archivo añado la siguiente línea:
+
+```
+192.168.1.13    moodle.local
+```
+
+Guardo los cambios con `Ctrl + S`.
+
+![Figura 2 — Modificación del archivo hosts en Windows](imagenes/reto-08/figura-02.png)
+
+*Figura 2 — Modificación del archivo `hosts` en Windows.*
+
+#### Validación de la resolución desde terminal
+
+Desde CMD o PowerShell del equipo anfitrión verifico que `moodle.local` resuelve correctamente hacia la IP del servidor:
+
+```cmd
+ping moodle.local
+```
+
+Las respuestas llegan desde `192.168.1.13`, confirmando que la resolución de nombres funciona correctamente.
+
+![Figura 3 — Resolución de moodle.local verificada desde terminal](imagenes/reto-08/figura-03.png)
+
+*Figura 3 — Resolución de `moodle.local` verificada desde terminal.*
+
+#### Acceso al servidor desde el navegador mediante nombre local
+
+Desde el equipo anfitrión accedo mediante el navegador a:
+
+```
+http://moodle.local
+```
+
+Se carga la página por defecto de Apache, confirmando que el servidor responde correctamente mediante el nombre corporativo `moodle.local`.
+
+![Figura 4 — Acceso al servidor desde el navegador mediante moodle.local](imagenes/reto-08/figura-04.png)
+
+*Figura 4 — Acceso al servidor desde el navegador mediante `moodle.local`.*
+
+### Comprobaciones finales
+
+- [x] IP estática `192.168.1.13` confirmada en el servidor.
+- [x] Archivo `hosts` editado con permisos de administrador.
+- [x] Línea `192.168.1.13 moodle.local` añadida correctamente.
+- [x] `ping moodle.local` responde desde `192.168.1.13`.
+- [x] Acceso web correcto desde el navegador mediante `http://moodle.local`.
 
 ---
 
