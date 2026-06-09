@@ -32,7 +32,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ✅ Completado |
 | 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ✅ Completado|
 | 12 | [Gestión corporativa de usuarios, roles y permisos en Moodle](#reto-12--gestión-corporativa-de-usuarios-roles-y-permisos-en-moodle) | ✅ Completado |
-| 13 | [Creación y organización del entorno formativo corporativo](#reto-13--creación-y-organización-del-entorno-formativo-corporativo) | ⏳ Pendiente |
+| 13 | [Creación y organización del entorno formativo corporativo](#reto-13--creación-y-organización-del-entorno-formativo-corporativo) | ✅ Completado |
 | 14 | [Hardening y buenas prácticas básicas de seguridad del servidor LMS](#reto-14--hardening-y-buenas-prácticas-básicas-de-seguridad-del-servidor-lms) | ⏳ Pendiente |
 | 15 | [Implementación de estrategia básica de copias de seguridad del LMS corporativo](#reto-15--implementación-de-estrategia-básica-de-copias-de-seguridad-del-lms-corporativo) | ⏳ Pendiente |
 
@@ -1481,10 +1481,102 @@ Inicio sesión con `alumno1.codearts` y compruebo que el panel no muestra ningun
 - [x] Todos los usuarios pueden iniciar sesión correctamente.
 
 ---
-
 ## Reto 13 — Creación y organización del entorno formativo corporativo
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con los usuarios y roles configurados, en este reto construyo la estructura académica del LMS corporativo. Creo las categorías formativas, los cursos, asigno el profesor a cada curso y matriculo a los alumnos. Al finalizar, Moodle simula un entorno educativo real con perfiles diferenciados interactuando correctamente dentro de los cursos.
+
+### Objetivos
+
+- Crear las categorías formativas ASIR y SMR.
+- Crear los cursos corporativos obligatorios.
+- Asignar `profesor.codearts` como profesor en los cursos.
+- Matricular `alumno1.codearts` y `alumno2.codearts` en al menos un curso.
+- Verificar diferencias de acceso entre perfiles dentro de los cursos.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| URL del LMS | `http://moodle.local` |
+| Categorías | ASIR, SMR |
+| Cursos | Administración de Sistemas, Redes y Servicios |
+| Profesor | `profesor.codearts` |
+| Alumnos | `alumno1.codearts`, `alumno2.codearts` |
+
+### Desarrollo
+
+#### Creación de categorías formativas
+
+Accedo a **Administración del sitio → Cursos → Gestionar cursos y categorías → Crear nueva categoría** y creo las dos categorías en la raíz del sistema:
+
+| Nombre | Categoría principal | Descripción |
+|---|---|---|
+| `ASIR` | Raíz | Administración de Sistemas Informáticos en Red |
+| `SMR` | Raíz | Sistemas Microinformáticos y Redes |
+
+Ambas categorías quedan al mismo nivel jerárquico en la raíz del sistema.
+
+![Figura 1 — Categorías formativas ASIR y SMR creadas en Moodle](imagenes/reto-13/figura-01.png)
+
+*Figura 1 — Categorías formativas ASIR y SMR creadas en Moodle.*
+
+#### Creación de cursos corporativos
+
+Desde **Administración del sitio → Cursos → Gestionar cursos y categorías** selecciono la categoría **ASIR** y creo los dos cursos obligatorios:
+
+| Campo | Curso 1 | Curso 2 |
+|---|---|---|
+| Nombre completo | `Administración de Sistemas` | `Redes y Servicios` |
+| Nombre corto | `ASIR-AS` | `ASIR-RS` |
+| Categoría | ASIR | ASIR |
+| Visible | Mostrar | Mostrar |
+
+![Figura 2 — Cursos corporativos creados en la categoría ASIR](imagenes/reto-13/figura-02.png)
+
+*Figura 2 — Cursos corporativos creados en la categoría ASIR.*
+
+#### Asignación de profesor.codearts a los cursos
+
+Accedo al curso **Administración de Sistemas** → **Participantes** → **Matricular usuarios**. Busco `profesor.codearts`, selecciono el rol **Profesor** y matriculo. Repito el proceso para el curso **Redes y Servicios**.
+
+![Figura 3 — Asignación de profesor.codearts como profesor en los cursos](imagenes/reto-13/figura-03.png)
+
+*Figura 3 — Asignación de `profesor.codearts` como profesor en los cursos.*
+
+#### Matriculación de alumnos en los cursos
+
+Desde **Participantes → Matricular usuarios** del curso **Administración de Sistemas**, matriculo a `alumno1.codearts` y `alumno2.codearts` con el rol **Estudiante**.
+
+![Figura 4 — Matriculación de alumnos en el curso Administración de Sistemas](imagenes/reto-13/figura-04.png)
+
+*Figura 4 — Matriculación de alumnos en el curso Administración de Sistemas.*
+
+#### Verificación de acceso con perfil alumno
+
+Inicio sesión con `alumno1.codearts` y compruebo que el curso **Administración de Sistemas** aparece en su panel. Accede correctamente pero sin opciones de edición ni administración de contenido.
+
+![Figura 5 — Acceso del alumno al curso matriculado](imagenes/reto-13/figura-05.png)
+
+*Figura 5 — Acceso del alumno al curso matriculado.*
+
+#### Diferencias de visualización entre profesor y alumno
+
+Inicio sesión con `profesor.codearts` y accedo al mismo curso. El profesor dispone del botón **Activar edición** y puede gestionar el contenido del curso, añadir actividades y recursos, mientras que el alumno solo ve el contenido publicado sin ninguna opción de edición.
+
+![Figura 6 — Diferencias de visualización entre perfil profesor y alumno](imagenes/reto-13/figura-06.png)
+
+*Figura 6 — Diferencias de visualización entre perfil profesor y alumno.*
+
+### Comprobaciones finales
+
+- [x] Categorías ASIR y SMR creadas en la raíz del sistema.
+- [x] Cursos `Administración de Sistemas` y `Redes y Servicios` creados en la categoría ASIR.
+- [x] `profesor.codearts` asignado con rol Profesor en ambos cursos.
+- [x] `alumno1.codearts` y `alumno2.codearts` matriculados como estudiantes.
+- [x] Alumnos acceden al curso sin opciones administrativas.
+- [x] Profesor dispone del botón Activar edición dentro del curso.
 
 ---
 
