@@ -23,7 +23,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 01 | [Preparación del entorno de virtualización corporativo](#reto-01--preparación-del-entorno-de-virtualización-corporativo) | ✅ Completado |
 | 02 | [Despliegue y configuración inicial del servidor Ubuntu Server](#reto-02--despliegue-y-configuración-inicial-del-servidor-ubuntu-server) | ✅ Completado |
 | 03 | [Implementación de recurso compartido corporativo mediante Samba](#reto-03--implementación-de-recurso-compartido-corporativo-mediante-samba) | ✅ Completado |
-| 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ⏳ Pendiente |
+| 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ✅ Completado |
 | 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ⏳ Pendiente |
 | 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) | ⏳ Pendiente |
 | 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ⏳ Pendiente |
@@ -456,7 +456,107 @@ ls -l /srv/codearts-share
 
 ## Reto 04 — Implantación del servidor web Apache
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+En este reto instalo Apache en el servidor Ubuntu, que será el componente encargado de servir las páginas web del LMS Moodle a los usuarios de la red local. Antes de instalar Moodle o cualquier otro servicio, verifico que Apache responde correctamente a peticiones HTTP en el puerto 80 desde el equipo anfitrión, dejando así la base web de la infraestructura preparada para los retos siguientes.
+
+### Objetivos
+
+- Instalar el servidor web Apache2 en Ubuntu Server.
+- Configurar el arranque automático del servicio.
+- Abrir el puerto 80 en el firewall.
+- Validar que Apache está activo y escuchando en el puerto 80.
+- Comprobar el acceso HTTP desde el navegador del equipo anfitrión.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Servicio | Apache2 |
+| Puerto | 80 (HTTP) |
+| Acceso desde | Navegador del equipo anfitrión Windows |
+
+### Desarrollo
+
+#### Instalación de Apache2
+
+Actualizo los repositorios e instalo Apache:
+
+```bash
+sudo apt update && sudo apt install apache2 -y
+```
+
+![Figura 1 — Instalación de Apache2 en Ubuntu Server](imagenes/reto-04/figura-01.png)
+
+*Figura 1 — Instalación de Apache2 en Ubuntu Server.*
+
+#### Habilitación del arranque automático y apertura del firewall
+
+Configuro Apache para que se inicie automáticamente con el sistema:
+
+```bash
+sudo systemctl enable apache2
+```
+
+Permito el tráfico HTTP en el firewall:
+
+```bash
+sudo ufw allow 'Apache'
+sudo ufw status
+```
+
+#### Verificación del estado del servicio
+
+Compruebo que Apache está activo y en ejecución:
+
+```bash
+sudo systemctl status apache2
+```
+
+![Figura 2 — Servicio Apache2 activo y en ejecución](imagenes/reto-04/figura-02.png)
+
+*Figura 2 — Servicio Apache2 activo y en ejecución.*
+
+#### Validación del puerto 80 y respuesta local
+
+Verifico que Apache está escuchando correctamente en el puerto 80 y que el servidor responde localmente:
+
+```bash
+sudo ss -tlnp | grep 80
+curl -I http://localhost
+```
+
+La respuesta incluye `HTTP/1.1 200 OK`, confirmando que Apache devuelve contenido correctamente.
+
+![Figura 3 — Validación del puerto 80 y respuesta HTTP del servidor](imagenes/reto-04/figura-03.png)
+
+*Figura 3 — Validación del puerto 80 y respuesta HTTP del servidor.*
+
+#### Acceso desde el navegador del equipo anfitrión
+
+Desde el equipo anfitrión Windows accedo mediante el navegador a:
+
+```
+http://192.168.1.13
+```
+
+Se carga la página por defecto de Apache con el mensaje **"Apache2 Ubuntu Default Page"**, confirmando que el servidor web es accesible desde la red local.
+
+![Figura 4 — Página por defecto de Apache2 accesible desde el equipo anfitrión](imagenes/reto-04/figura-04.png)
+
+*Figura 4 — Página por defecto de Apache2 accesible desde el equipo anfitrión.*
+
+### Comprobaciones finales
+
+- [x] Apache2 instalado correctamente.
+- [x] Servicio configurado para arranque automático con `systemctl enable`.
+- [x] Puerto 80 abierto en el firewall UFW.
+- [x] `systemctl status apache2` muestra **active (running)**.
+- [x] Puerto 80 escuchando verificado con `ss -tlnp`.
+- [x] Respuesta `200 OK` confirmada con `curl` desde el servidor.
+- [x] Página por defecto de Apache visible desde el navegador del anfitrión.
 
 ---
 
