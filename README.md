@@ -29,7 +29,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ✅ Completado|
 | 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ✅ Completado |
 | 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ✅ Completado |
-| 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ⏳ Pendiente |
+| 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ✅ Completado |
 | 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ⏳ Pendiente |
 | 12 | [Gestión corporativa de usuarios, roles y permisos en Moodle](#reto-12--gestión-corporativa-de-usuarios-roles-y-permisos-en-moodle) | ⏳ Pendiente |
 | 13 | [Creación y organización del entorno formativo corporativo](#reto-13--creación-y-organización-del-entorno-formativo-corporativo) | ⏳ Pendiente |
@@ -1196,10 +1196,118 @@ Moodle separa el código fuente de los datos internos por razones de seguridad. 
 - [x] Pantalla del instalador de Moodle visible desde `http://moodle.local`.
 
 ---
-
 ## Reto 10 — Instalación lógica y configuración inicial de Moodle
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con la estructura de directorios preparada y la base de datos lista, en este reto completo el asistente web de instalación de Moodle. La plataforma se conecta con MariaDB, genera automáticamente todas las tablas internas necesarias y queda completamente operativa con una cuenta administradora funcional lista para gestionar el LMS corporativo.
+
+### Objetivos
+
+- Completar el asistente web de instalación de Moodle.
+- Configurar correctamente las rutas del LMS y la conexión con MariaDB.
+- Validar que todos los requisitos del sistema están cubiertos.
+- Crear la cuenta administradora principal del LMS.
+- Verificar el acceso al panel principal de Moodle.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| URL del LMS | `http://moodle.local` |
+| Base de datos | `moodle_db` |
+| Usuario SQL | `moodle_user` |
+| Directorio de datos | `/var/moodledata` |
+| Versión Moodle | 4.5.11+ (Build: 20260604) |
+| Acceso desde | Navegador del equipo anfitrión |
+
+### Desarrollo
+
+#### Acceso al instalador web de Moodle
+
+Desde el navegador del equipo anfitrión accedo a `http://moodle.local`. Se carga el asistente de instalación, selecciono el idioma y hago clic en **Next**.
+
+![Figura 1 — Inicio del instalador web de Moodle](imagenes/reto-10/figura-01.png)
+
+*Figura 1 — Inicio del instalador web de Moodle.*
+
+#### Configuración de la conexión con MariaDB
+
+El instalador solicita los parámetros de conexión con la base de datos. Selecciono el driver **Improved MySQL (native/mysqli)**, compatible con MariaDB, e introduzco los datos de conexión:
+
+| Campo | Valor |
+|---|---|
+| Database host | `localhost` |
+| Database name | `moodle_db` |
+| Database user | `moodle_user` |
+| Tables prefix | `mdl_` |
+| Database port | *(vacío)* |
+| Unix socket | *(vacío)* |
+
+Una vez configurada la conexión, edito el archivo `config.php` generado por el instalador para corregir el driver a `mariadb`:
+
+```bash
+sudo nano /var/www/moodle/config.php
+```
+
+```php
+$CFG->dbtype = 'mariadb';
+```
+
+#### Validación de requisitos del sistema
+
+El instalador verifica que todos los componentes necesarios están disponibles. Se resuelven los siguientes puntos antes de continuar:
+
+- `max_input_vars` aumentado a 5000 en `/etc/php/8.5/apache2/php.ini`.
+- Restricción de versión PHP eliminada en `/var/www/moodle/admin/environment.xml` para compatibilidad con PHP 8.5.
+- Driver de base de datos corregido a `mariadb` en `config.php`.
+
+![Figura 3 — Validación de requisitos del sistema](imagenes/reto-10/figura-03.png)
+
+*Figura 3 — Validación de requisitos del sistema.*
+
+#### Instalación automática de tablas y componentes internos
+
+El instalador genera automáticamente todas las tablas internas de Moodle en `moodle_db`. El proceso ejecuta cientos de operaciones SQL. Al finalizar aparece el log completo con el botón **Continue**.
+
+![Figura 4 — Instalación de tablas y componentes internos completada](imagenes/reto-10/figura-04.png)
+
+*Figura 4 — Instalación de tablas y componentes internos completada.*
+
+#### Creación de la cuenta administradora
+
+El instalador solicita los datos de la cuenta administradora principal del LMS:
+
+| Campo | Valor |
+|---|---|
+| Username | `admin` |
+| First name | `Admin` |
+| Surname | `CodeArts` |
+| Country | Spain |
+
+![Figura 5 — Creación de la cuenta administradora del LMS](imagenes/reto-10/figura-05.png)
+
+*Figura 5 — Creación de la cuenta administradora del LMS.*
+
+#### Acceso al panel principal de Moodle
+
+Tras completar la configuración básica del sitio con el nombre `CodeArts Solutions LMS`, Moodle finaliza la instalación y redirige automáticamente al panel principal, confirmando que la plataforma está completamente operativa.
+
+![Figura 6 — Panel principal de Moodle operativo tras la instalación](imagenes/reto-10/figura-06.png)
+
+*Figura 6 — Panel principal de Moodle operativo tras la instalación.*
+
+### Comprobaciones finales
+
+- [x] Instalador web completado sin errores críticos.
+- [x] Rutas del LMS configuradas correctamente.
+- [x] Driver de base de datos corregido a `mariadb` en `config.php`.
+- [x] `max_input_vars` configurado a 5000.
+- [x] Conexión con MariaDB establecida con `moodle_user` y `moodle_db`.
+- [x] Tablas internas de Moodle generadas correctamente.
+- [x] Cuenta administradora creada y funcional.
+- [x] Panel principal de Moodle accesible desde `http://moodle.local`.
 
 ---
 
