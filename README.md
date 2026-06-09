@@ -1579,10 +1579,164 @@ Inicio sesión con `profesor.codearts` y accedo al mismo curso. El profesor disp
 - [x] Profesor dispone del botón Activar edición dentro del curso.
 
 ---
-
 ## Reto 14 — Hardening y buenas prácticas básicas de seguridad del servidor LMS
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con la infraestructura Moodle completamente operativa, en este reto aplico medidas básicas de hardening sobre el servidor Ubuntu para reducir la superficie de ataque y garantizar que el entorno sigue buenas prácticas de administración Linux. Reviso los servicios activos, el estado del firewall, los puertos expuestos, los permisos de Moodle y las actualizaciones pendientes del sistema.
+
+### Objetivos
+
+- Revisar los servicios activos e identificar los innecesarios.
+- Activar y configurar las reglas del firewall UFW.
+- Validar permisos críticos de la infraestructura Moodle.
+- Comprobar actualizaciones pendientes del sistema.
+- Verificar puertos expuestos hacia la red local.
+- Confirmar que el LMS sigue operativo tras las revisiones.
+
+### Material utilizado
+
+| Elemento | Revisión aplicada |
+|---|---|
+| SSH | Estado y acceso |
+| Apache | Estado operativo |
+| MariaDB | Estado operativo y exposición de red |
+| Firewall UFW | Activación y reglas configuradas |
+| Permisos Moodle | Validación y corrección de propietarios y permisos |
+| Actualizaciones | Comprobación del sistema |
+
+### Desarrollo
+
+#### Revisión de servicios activos del sistema
+
+Listo todos los servicios activos en el servidor para identificar cuáles están corriendo y verificar que solo están en ejecución los necesarios para el proyecto:
+
+```bash
+sudo systemctl list-units --type=service --state=running
+```
+
+Verifico individualmente el estado de los servicios críticos:
+
+```bash
+sudo systemctl status ssh
+sudo systemctl status apache2
+sudo systemctl status mariadb
+sudo systemctl status smbd
+```
+
+![Figura 1 — Servicios activos en el servidor Ubuntu](imagenes/reto-14/figura-01.png)
+
+*Figura 1 — Servicios activos en el servidor Ubuntu.*
+
+#### Activación y configuración del firewall UFW
+
+El firewall se encontraba inactivo. Añado las reglas necesarias antes de activarlo para no perder el acceso SSH remoto:
+
+```bash
+sudo ufw allow ssh
+sudo ufw allow 'Apache'
+sudo ufw allow samba
+sudo ufw enable
+sudo ufw status verbose
+```
+
+Las reglas activas tras la configuración son:
+
+| Puerto / Servicio | Acción | Justificación |
+|---|---|---|
+| 22/tcp | ALLOW | Acceso remoto SSH |
+| 80/tcp (Apache) | ALLOW | Acceso HTTP al LMS |
+| 137,138/udp 139,445/tcp (Samba) | ALLOW | Recurso compartido corporativo |
+| Default | DENY | Todo lo demás bloqueado |
+
+![Figura 2 — Estado y reglas del firewall UFW](imagenes/reto-14/figura-02.png)
+
+*Figura 2 — Estado y reglas del firewall UFW.*
+
+#### Revisión de puertos abiertos y exposición de servicios
+
+Compruebo qué puertos están escuchando en el servidor y qué servicios los usan:
+
+```bash
+sudo ss -tlnp
+```
+
+Resultado del análisis:
+
+| Puerto | Servicio | Dirección | Valoración |
+|---|---|---|---|
+| 3306 | MariaDB | `127.0.0.1` únicamente | ✅ No expuesto a la red |
+| 22 | SSH | Todas las interfaces | ✅ Necesario |
+| 80 | Apache | Todas las interfaces | ✅ Necesario para el LMS |
+| 445 / 139 | Samba | Todas las interfaces | ✅ Necesario |
+| 53 | systemd-resolve | `127.0.0.53` únicamente | ✅ DNS interno del sistema |
+
+El punto más crítico es que MariaDB escucha únicamente en `127.0.0.1`, confirmando que la base de datos no está expuesta a la red local.
+
+![Figura 3 — Puertos abiertos y servicios en escucha del servidor](imagenes/reto-14/figura-03.png)
+
+*Figura 3 — Puertos abiertos y servicios en escucha del servidor.*
+
+#### Validación y corrección de permisos de la infraestructura Moodle
+
+Compruebo los permisos de los directorios críticos:
+
+```bash
+ls -ld /var/www/moodle
+ls -ld /var/moodledata
+ls -ld /srv/codearts-share
+```
+
+Se detecta que `/var/moodledata` tiene permisos `777`, más abiertos de lo recomendado. Se corrige a `770` para que solo el propietario `www-data` tenga acceso de escritura:
+
+```bash
+sudo chmod 770 /var/moodledata
+ls -ld /var/moodledata
+```
+
+Estado final de los directorios:
+
+| Directorio | Propietario | Permisos |
+|---|---|---|
+| `/var/www/moodle` | `www-data:www-data` | `755` |
+| `/var/moodledata` | `www-data:www-data` | `770` |
+| `/srv/codearts-share` | `jorge:jorge` | `777` |
+
+![Figura 4 — Validación y corrección de permisos de la infraestructura Moodle](imagenes/reto-14/figura-04.png)
+
+*Figura 4 — Validación y corrección de permisos de la infraestructura Moodle.*
+
+#### Comprobación de actualizaciones pendientes del sistema
+
+Verifico si hay actualizaciones de seguridad pendientes y las aplico:
+
+```bash
+sudo apt update
+sudo apt list --upgradable 2>/dev/null
+sudo apt upgrade -y
+```
+
+![Figura 5 — Comprobación de actualizaciones del sistema](imagenes/reto-14/figura-05.png)
+
+*Figura 5 — Comprobación de actualizaciones del sistema.*
+
+#### Verificación final del LMS tras las revisiones de seguridad
+
+Desde el navegador del equipo anfitrión accedo a `http://moodle.local` y confirmo que la plataforma sigue completamente operativa tras todas las revisiones y medidas de hardening aplicadas.
+
+![Figura 6 — LMS operativo tras aplicar las medidas de hardening](imagenes/reto-14/figura-06.png)
+
+*Figura 6 — LMS operativo tras aplicar las medidas de hardening.*
+
+### Comprobaciones finales
+
+- [x] Servicios activos revisados — solo los necesarios para el proyecto en ejecución.
+- [x] Firewall UFW activado con reglas para SSH, HTTP y Samba.
+- [x] Puerto 3306 de MariaDB escuchando únicamente en `127.0.0.1`.
+- [x] Permisos de `/var/moodledata` corregidos de `777` a `770`.
+- [x] Permisos de `/var/www/moodle` correctos con propietario `www-data`.
+- [x] Sistema comprobado y actualizado.
+- [x] LMS accesible y operativo tras todas las revisiones de seguridad.
 
 ---
 
