@@ -28,7 +28,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) |✅ Completado |
 | 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ✅ Completado|
 | 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ✅ Completado |
-| 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ⏳ Pendiente |
+| 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ✅ Completado |
 | 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ⏳ Pendiente |
 | 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ⏳ Pendiente |
 | 12 | [Gestión corporativa de usuarios, roles y permisos en Moodle](#reto-12--gestión-corporativa-de-usuarios-roles-y-permisos-en-moodle) | ⏳ Pendiente |
@@ -1035,10 +1035,165 @@ Se carga la página por defecto de Apache, confirmando que el servidor responde 
 - [x] Acceso web correcto desde el navegador mediante `http://moodle.local`.
 
 ---
-
 ## Reto 09 — Despliegue y preparación de la estructura del LMS corporativo
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con toda la infraestructura base operativa, en este reto descargo el código fuente de Moodle y preparo manualmente la estructura de directorios que la plataforma necesita para funcionar. Moodle separa intencionalmente el código web público del directorio de datos interno por razones de seguridad: `/var/www/moodle` será accesible desde Apache, mientras que `/var/moodledata` almacenará archivos internos fuera del alcance público del servidor web.
+
+### Objetivos
+
+- Descargar la versión estable de Moodle desde terminal.
+- Crear y organizar la estructura de directorios del LMS.
+- Configurar permisos y propietarios correctos para Apache.
+- Crear un VirtualHost en Apache para `moodle.local`.
+- Verificar desde el navegador que aparece el instalador inicial de Moodle.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Nombre local | `moodle.local` |
+| Plataforma LMS | Moodle 4.x (versión estable) |
+| Directorio web | `/var/www/moodle` |
+| Directorio de datos | `/var/moodledata` |
+
+### Desarrollo
+
+#### Descarga del código fuente de Moodle
+
+Descargo la última versión estable de Moodle directamente desde terminal usando `wget`:
+
+```bash
+cd /tmp
+wget https://download.moodle.org/download.php/direct/stable405/moodle-latest-405.tgz
+```
+
+![Figura 1 — Descarga del código fuente de Moodle desde terminal](imagenes/reto-09/figura-01.png)
+
+*Figura 1 — Descarga del código fuente de Moodle desde terminal.*
+
+#### Descompresión del paquete
+
+Descomprimo el archivo descargado en `/tmp` y verifico que se ha creado la carpeta `moodle`:
+
+```bash
+tar -xvzf moodle-latest-405.tgz
+ls /tmp/moodle
+```
+
+![Figura 2 — Descompresión del paquete de Moodle](imagenes/reto-09/figura-02.png)
+
+*Figura 2 — Descompresión del paquete de Moodle.*
+
+#### Creación de la estructura de directorios y movimiento del código fuente
+
+Creo el directorio web donde se alojará el código fuente y el directorio de almacenamiento interno fuera del directorio web público:
+
+```bash
+sudo mkdir -p /var/www/moodle
+sudo mkdir -p /var/moodledata
+```
+
+Muevo el contenido descomprimido al directorio web de Apache y verifico la estructura final:
+
+```bash
+sudo mv /tmp/moodle/* /var/www/moodle/
+ls /var/www/
+ls /var/
+```
+
+![Figura 3 — Estructura de directorios del LMS creada correctamente](imagenes/reto-09/figura-03.png)
+
+*Figura 3 — Estructura de directorios del LMS creada correctamente.*
+
+#### Configuración de permisos y propietarios
+
+Asigno el propietario `www-data` (usuario de Apache) a ambos directorios y aplico los permisos adecuados:
+
+```bash
+sudo chown -R www-data:www-data /var/www/moodle
+sudo chown -R www-data:www-data /var/moodledata
+sudo chmod -R 755 /var/www/moodle
+sudo chmod -R 770 /var/moodledata
+```
+
+Verifico que los permisos se han aplicado correctamente:
+
+```bash
+ls -ld /var/www/moodle
+ls -ld /var/moodledata
+```
+
+![Figura 4 — Permisos y propietarios aplicados sobre los directorios del LMS](imagenes/reto-09/figura-04.png)
+
+*Figura 4 — Permisos y propietarios aplicados sobre los directorios del LMS.*
+
+#### Configuración del VirtualHost de Apache para moodle.local
+
+Creo un VirtualHost específico para que Apache sirva Moodle bajo el nombre `moodle.local`:
+
+```bash
+sudo nano /etc/apache2/sites-available/moodle.conf
+```
+
+```apache
+<VirtualHost *:80>
+    ServerName moodle.local
+    DocumentRoot /var/www/moodle
+
+    <Directory /var/www/moodle>
+        Options FollowSymLinks
+        AllowOverride All
+        Require all granted
+    </Directory>
+
+    ErrorLog ${APACHE_LOG_DIR}/moodle_error.log
+    CustomLog ${APACHE_LOG_DIR}/moodle_access.log combined
+
+    php_flag display_errors Off
+    php_value error_reporting 0
+</VirtualHost>
+```
+
+Habilito el sitio y el módulo `rewrite`, y reinicio Apache:
+
+```bash
+sudo a2ensite moodle.conf
+sudo a2enmod rewrite
+sudo systemctl restart apache2
+```
+
+#### Verificación del instalador de Moodle desde el navegador
+
+Desde el equipo anfitrión accedo mediante el navegador a:
+
+```
+http://moodle.local
+```
+
+Se carga la pantalla inicial del instalador web de Moodle con el selector de idioma visible, confirmando que Apache sirve correctamente el LMS desde `/var/www/moodle`. En esta fase no se completa el asistente de instalación.
+
+![Figura 5 — Instalador inicial de Moodle accesible desde el navegador](imagenes/reto-09/figura-05.png)
+
+*Figura 5 — Instalador inicial de Moodle accesible desde el navegador.*
+
+#### Seguridad: separación entre código fuente y datos internos
+
+Moodle separa el código fuente de los datos internos por razones de seguridad. El directorio `/var/moodledata` almacena archivos subidos por usuarios, caché, sesiones y datos de cursos. Al situarlo fuera del directorio público de Apache, solo la propia aplicación puede acceder a él mediante el sistema de archivos del servidor. Si estuviera dentro de `/var/www/moodle`, cualquier usuario podría acceder a esos archivos directamente desde el navegador, exponiendo datos privados y comprometiendo la seguridad del sistema.
+
+### Comprobaciones finales
+
+- [x] Moodle descargado y descomprimido correctamente.
+- [x] Directorio `/var/www/moodle` creado con el código fuente en su interior.
+- [x] Directorio `/var/moodledata` creado fuera del directorio web público.
+- [x] Propietario `www-data` asignado a ambos directorios.
+- [x] Permisos `755` en `/var/www/moodle` y `770` en `/var/moodledata`.
+- [x] VirtualHost `moodle.conf` creado y habilitado en Apache.
+- [x] Módulo `rewrite` habilitado.
+- [x] Pantalla del instalador de Moodle visible desde `http://moodle.local`.
 
 ---
 
