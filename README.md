@@ -31,7 +31,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ✅ Completado |
 | 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ✅ Completado |
 | 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ✅ Completado|
-| 12 | [Gestión corporativa de usuarios, roles y permisos en Moodle](#reto-12--gestión-corporativa-de-usuarios-roles-y-permisos-en-moodle) | ⏳ Pendiente |
+| 12 | [Gestión corporativa de usuarios, roles y permisos en Moodle](#reto-12--gestión-corporativa-de-usuarios-roles-y-permisos-en-moodle) | ✅ Completado |
 | 13 | [Creación y organización del entorno formativo corporativo](#reto-13--creación-y-organización-del-entorno-formativo-corporativo) | ⏳ Pendiente |
 | 14 | [Hardening y buenas prácticas básicas de seguridad del servidor LMS](#reto-14--hardening-y-buenas-prácticas-básicas-de-seguridad-del-servidor-lms) | ⏳ Pendiente |
 | 15 | [Implementación de estrategia básica de copias de seguridad del LMS corporativo](#reto-15--implementación-de-estrategia-básica-de-copias-de-seguridad-del-lms-corporativo) | ⏳ Pendiente |
@@ -1399,10 +1399,86 @@ Accedo a **Administración del sitio → Portada → Ajustes de la portada** y c
 - [x] Portada del LMS personalizada y visible.
 
 ---
-
 ## Reto 12 — Gestión corporativa de usuarios, roles y permisos en Moodle
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con el LMS configurado, en este reto creo la estructura inicial de usuarios corporativos de CodeArts Solutions y asigno los roles correspondientes a cada perfil. Moodle distingue entre roles globales del sistema y roles por curso. En este reto trabajo con los roles globales, definiendo quién puede hacer qué dentro de toda la plataforma.
+
+### Objetivos
+
+- Crear los 5 usuarios corporativos obligatorios del proyecto.
+- Asignar el rol correspondiente a cada perfil.
+- Verificar que los distintos roles muestran permisos diferentes.
+- Confirmar que los alumnos no tienen acceso administrativo.
+
+### Material utilizado
+
+| Usuario | Rol asignado |
+|---|---|
+| `admin.codearts` | Administrador |
+| `profesor.codearts` | Profesor |
+| `supervisor.codearts` | Manager |
+| `alumno1.codearts` | Estudiante |
+| `alumno2.codearts` | Estudiante |
+
+### Desarrollo
+
+#### Creación de usuarios corporativos
+
+Accedo a **Administración del sitio → Usuarios → Cuentas → Agregar un usuario** y creo cada usuario con los siguientes datos:
+
+- **Contraseña:** mínimo 8 caracteres, mayúscula, número y carácter especial.
+- **Apellido corporativo:** `CodeArts` para todos los usuarios.
+- **Email:** `usuario@codearts.local`.
+- **País:** Spain.
+
+Repito el proceso para los 5 usuarios y verifico el listado completo desde **Administración del sitio → Usuarios → Cuentas → Examinar lista de usuarios**.
+
+![Figura 1 — Listado de usuarios corporativos creados en Moodle](imagenes/reto-12/figura-01.png)
+
+*Figura 1 — Listado de usuarios corporativos creados en Moodle.*
+
+#### Asignación de roles globales
+
+Los roles globales se asignan desde **Administración del sitio → Usuarios → Permisos → Asignar roles globales**.
+
+- **Administrador:** `admin.codearts` añadido desde **Administración del sitio → Usuarios → Permisos → Administradores del sitio**.
+- **Manager:** `supervisor.codearts` asignado desde **Asignar roles globales → Manager**.
+- **Profesor y Estudiantes:** los roles de Profesor y Estudiante se asignan a nivel de curso en el Reto 13.
+
+#### Verificación de acceso con perfil administrador
+
+Desde la cuenta `admin.codearts` verifico que tiene acceso completo al panel de administración del sitio, con visibilidad total sobre todas las secciones: General, Usuarios, Cursos, Calificaciones, Plugins, Apariencia, Servidor, Informes y Desarrollo.
+
+![Figura 3 — Panel administrativo accesible desde la cuenta administradora](imagenes/reto-12/figura-03.png)
+
+*Figura 3 — Panel administrativo accesible desde la cuenta administradora.*
+
+#### Verificación de acceso con perfil supervisor
+
+Inicio sesión con `supervisor.codearts` y compruebo que el panel muestra opciones limitadas respecto al administrador. El Manager puede gestionar cursos y usuarios pero no accede a configuración avanzada del servidor ni plugins del sistema.
+
+![Figura 4 — Acceso con perfil supervisor y diferencias de permisos visibles](imagenes/reto-12/figura-04.png)
+
+*Figura 4 — Acceso con perfil supervisor y diferencias de permisos visibles.*
+
+#### Verificación de acceso con perfil alumno
+
+Inicio sesión con `alumno1.codearts` y compruebo que el panel no muestra ninguna opción administrativa. El alumno solo ve su área personal, sus cursos y su perfil de usuario, sin acceso a ninguna sección de administración del sitio.
+
+![Figura 5 — Acceso con perfil alumno sin permisos administrativos](imagenes/reto-12/figura-05.png)
+
+*Figura 5 — Acceso con perfil alumno sin permisos administrativos.*
+
+### Comprobaciones finales
+
+- [x] 5 usuarios corporativos creados correctamente.
+- [x] `admin.codearts` con acceso completo al panel de administración.
+- [x] `supervisor.codearts` con rol Manager asignado globalmente.
+- [x] `alumno1.codearts` y `alumno2.codearts` sin acceso administrativo.
+- [x] Diferencias de permisos verificadas entre perfiles.
+- [x] Todos los usuarios pueden iniciar sesión correctamente.
 
 ---
 
