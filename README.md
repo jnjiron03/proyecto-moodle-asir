@@ -24,7 +24,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 02 | [Despliegue y configuración inicial del servidor Ubuntu Server](#reto-02--despliegue-y-configuración-inicial-del-servidor-ubuntu-server) | ✅ Completado |
 | 03 | [Implementación de recurso compartido corporativo mediante Samba](#reto-03--implementación-de-recurso-compartido-corporativo-mediante-samba) | ✅ Completado |
 | 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ✅ Completado |
-| 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ⏳ Pendiente |
+| 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ✅ Completado |
 | 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) | ⏳ Pendiente |
 | 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ⏳ Pendiente |
 | 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ⏳ Pendiente |
@@ -562,7 +562,134 @@ Se carga la página por defecto de Apache con el mensaje **"Apache2 Ubuntu Defau
 
 ## Reto 05 — Instalación del entorno PHP para la plataforma LMS
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Moodle es una aplicación web desarrollada en PHP, por lo que el servidor necesita un intérprete PHP completamente funcional e integrado con Apache. En este reto instalo PHP junto con todas las extensiones que Moodle requiere para funcionar correctamente, y verifico que Apache es capaz de procesar archivos PHP mediante una página de prueba visible desde el navegador.
+
+### Objetivos
+
+- Instalar PHP y los módulos necesarios para Moodle en Ubuntu Server.
+- Verificar la versión instalada de PHP.
+- Confirmar la integración correcta entre Apache y PHP.
+- Crear y validar un archivo de prueba `info.php` desde el navegador.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Lenguaje | PHP 8.x |
+| Servidor web | Apache2 |
+| Directorio web | `/var/www/html/` |
+
+### Desarrollo
+
+#### Instalación de PHP y módulos requeridos por Moodle
+
+Actualizo los repositorios e instalo PHP junto con todas las extensiones que Moodle necesita. El módulo OPcache viene incluido dentro del paquete principal de PHP en Ubuntu y no requiere instalación separada:
+
+```bash
+sudo apt update && sudo apt install php libapache2-mod-php php-mysql php-xml php-mbstring php-curl php-zip php-gd php-intl php-soap php-cli -y
+```
+
+Estas extensiones cubren los requisitos de Moodle 4.x:
+
+| Módulo | Función en Moodle |
+|---|---|
+| `libapache2-mod-php` | Integración de PHP con Apache |
+| `php-mysql` | Conexión con la base de datos MariaDB |
+| `php-xml` | Procesamiento de XML y RSS |
+| `php-mbstring` | Soporte de caracteres multibyte y UTF-8 |
+| `php-curl` | Peticiones HTTP externas |
+| `php-zip` | Gestión de archivos comprimidos |
+| `php-gd` | Procesamiento de imágenes |
+| `php-intl` | Internacionalización y localización |
+| `php-soap` | Servicios web SOAP |
+| `OPcache` | Incluido en el paquete PHP base — caché de código para mejor rendimiento |
+
+![Figura 1 — Instalación de PHP y módulos requeridos por Moodle](imagenes/reto-05/figura-01.png)
+
+*Figura 1 — Instalación de PHP y módulos requeridos por Moodle.*
+
+#### Verificación de la versión instalada de PHP
+
+Compruebo que PHP se ha instalado correctamente y verifico la versión disponible:
+
+```bash
+php --version
+```
+
+Verifico también que OPcache está cargado correctamente:
+
+```bash
+php -m | grep -i opcache
+```
+
+![Figura 2 — Versión de PHP instalada en el servidor](imagenes/reto-05/figura-02.png)
+
+*Figura 2 — Versión de PHP instalada en el servidor.*
+
+#### Reinicio de Apache tras la integración con PHP
+
+Reinicio Apache para que cargue el módulo PHP correctamente y compruebo que el servicio sigue activo:
+
+```bash
+sudo systemctl restart apache2
+sudo systemctl status apache2
+```
+
+![Figura 3 — Estado de Apache2 tras la integración con PHP](imagenes/reto-05/figura-03.png)
+
+*Figura 3 — Estado de Apache2 tras la integración con PHP.*
+
+#### Creación del archivo de prueba phpinfo
+
+Creo un archivo PHP dentro del directorio web de Apache para verificar que el servidor procesa PHP correctamente:
+
+```bash
+sudo nano /var/www/html/info.php
+```
+
+Contenido del archivo:
+
+```php
+<?php
+phpinfo();
+?>
+```
+
+![Figura 4 — Archivo de prueba info.php creado en el directorio web](imagenes/reto-05/figura-04.png)
+
+*Figura 4 — Archivo de prueba `info.php` creado en el directorio web.*
+
+#### Validación del entorno PHP desde el navegador
+
+Desde el equipo anfitrión Windows accedo mediante el navegador a:
+
+```
+http://192.168.1.13/info.php
+```
+
+Se carga la página de información de PHP con todos los módulos instalados, la versión y la integración con Apache, confirmando que el servidor procesa correctamente archivos PHP. Una vez validado, elimino el archivo por seguridad ya que expone información sensible del servidor:
+
+```bash
+sudo rm /var/www/html/info.php
+```
+
+![Figura 5 — Página phpinfo() accesible desde el navegador del equipo anfitrión](imagenes/reto-05/figura-05.png)
+
+*Figura 5 — Página phpinfo() accesible desde el navegador del equipo anfitrión.*
+
+### Comprobaciones finales
+
+- [x] PHP y todos los módulos requeridos por Moodle instalados.
+- [x] OPcache activo verificado con `php -m | grep -i opcache`.
+- [x] `php --version` muestra la versión instalada correctamente.
+- [x] Apache reiniciado y activo tras la integración con PHP.
+- [x] Archivo `info.php` creado en `/var/www/html/`.
+- [x] Página `phpinfo()` accesible desde el navegador del anfitrión.
+- [x] Archivo `info.php` eliminado tras la validación.
 
 ---
 
