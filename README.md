@@ -1739,7 +1739,138 @@ Desde el navegador del equipo anfitrión accedo a `http://moodle.local` y confir
 - [x] LMS accesible y operativo tras todas las revisiones de seguridad.
 
 ---
-
 ## Reto 15 — Implementación de estrategia básica de copias de seguridad del LMS corporativo
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Toda infraestructura en producción necesita una estrategia de backup que permita recuperar el servicio ante un fallo, error administrativo o pérdida de datos. En este último reto implemento una estrategia básica de copias de seguridad para los tres componentes críticos del LMS: la base de datos MariaDB, el directorio de datos interno de Moodle y el código fuente de la plataforma.
+
+### Objetivos
+
+- Identificar los elementos críticos a respaldar.
+- Crear la estructura de almacenamiento `/srv/backups`.
+- Realizar backup de la base de datos `moodle_db`.
+- Realizar backup del directorio `/var/moodledata`.
+- Realizar backup del código fuente `/var/www/moodle`.
+- Verificar que los archivos generados son correctos y tienen un tamaño coherente.
+
+### Material utilizado
+
+| Elemento | Ruta |
+|---|---|
+| Directorio de backups | `/srv/backups` |
+| Base de datos | `moodle_db` |
+| Datos internos Moodle | `/var/moodledata` |
+| Código fuente | `/var/www/moodle` |
+
+### Desarrollo
+
+#### Creación de la estructura de almacenamiento de backups
+
+Creo el directorio obligatorio donde se almacenarán todas las copias de seguridad y verifico que se ha creado correctamente:
+
+```bash
+sudo mkdir -p /srv/backups
+sudo chown jorge:jorge /srv/backups
+ls -ld /srv/backups
+```
+
+![Figura 1 — Estructura del directorio /srv/backups creada](imagenes/reto-15/figura-01.png)
+
+*Figura 1 — Estructura del directorio `/srv/backups` creada.*
+
+#### Backup de la base de datos MariaDB
+
+Exporto la base de datos `moodle_db` a un archivo SQL incluyendo la fecha en el nombre para facilitar su identificación:
+
+```bash
+sudo mysqldump -u root -p moodle_db > /srv/backups/moodle_db_$(date +%Y%m%d).sql
+```
+
+Verifico que el archivo se ha generado correctamente y compruebo su tamaño:
+
+```bash
+ls -lh /srv/backups/moodle_db_*.sql
+```
+
+![Figura 2 — Backup de la base de datos moodle_db generado correctamente](imagenes/reto-15/figura-02.png)
+
+*Figura 2 — Backup de la base de datos `moodle_db` generado correctamente.*
+
+#### Backup del directorio moodledata
+
+Comprimo el directorio `/var/moodledata` en un archivo `.tar.gz` dentro del directorio de backups:
+
+```bash
+sudo tar -czvf /srv/backups/moodledata_$(date +%Y%m%d).tar.gz /var/moodledata
+```
+
+Verifico el archivo generado y su tamaño:
+
+```bash
+ls -lh /srv/backups/moodledata_*.tar.gz
+```
+
+![Figura 3 — Backup del directorio moodledata generado correctamente](imagenes/reto-15/figura-03.png)
+
+*Figura 3 — Backup del directorio `moodledata` generado correctamente.*
+
+#### Backup del código fuente de Moodle
+
+Comprimo el directorio `/var/www/moodle` en un archivo `.tar.gz`:
+
+```bash
+sudo tar -czvf /srv/backups/moodle_code_$(date +%Y%m%d).tar.gz /var/www/moodle
+```
+
+Verifico el archivo generado:
+
+```bash
+ls -lh /srv/backups/moodle_code_*.tar.gz
+```
+
+![Figura 4 — Backup del código fuente de Moodle generado correctamente](imagenes/reto-15/figura-04.png)
+
+*Figura 4 — Backup del código fuente de Moodle generado correctamente.*
+
+#### Validación de todos los backups generados
+
+Listo el contenido completo del directorio `/srv/backups` para verificar que los tres archivos existen con tamaños coherentes:
+
+```bash
+ls -lh /srv/backups/
+```
+
+| Archivo | Contenido | Tamaño esperado |
+|---|---|---|
+| `moodle_db_YYYYMMDD.sql` | Base de datos MariaDB | Varios MB |
+| `moodledata_YYYYMMDD.tar.gz` | Datos internos Moodle | Varios MB |
+| `moodle_code_YYYYMMDD.tar.gz` | Código fuente Moodle | +100 MB |
+
+![Figura 5 — Validación de los archivos de backup generados en /srv/backups](imagenes/reto-15/figura-05.png)
+
+*Figura 5 — Validación de los archivos de backup generados en `/srv/backups`.*
+
+#### Verificación de integridad de los backups
+
+Verifico que los archivos comprimidos son válidos y contienen los datos esperados:
+
+```bash
+tar -tzvf /srv/backups/moodledata_$(date +%Y%m%d).tar.gz | head -20
+head -5 /srv/backups/moodle_db_$(date +%Y%m%d).sql
+```
+
+Las primeras líneas del archivo SQL muestran las cabeceras del dump de MariaDB, confirmando que el archivo es válido y contiene los datos de la base de datos.
+
+![Figura 6 — Verificación de integridad de las copias de seguridad generadas](imagenes/reto-15/figura-06.png)
+
+*Figura 6 — Verificación de integridad de las copias de seguridad generadas.*
+
+### Comprobaciones finales
+
+- [x] Directorio `/srv/backups` creado con permisos correctos.
+- [x] Backup de `moodle_db` generado como archivo `.sql`.
+- [x] Backup de `/var/moodledata` generado como `.tar.gz`.
+- [x] Backup de `/var/www/moodle` generado como `.tar.gz`.
+- [x] Los tres archivos existen en `/srv/backups` con tamaños coherentes.
+- [x] Integridad de los archivos verificada correctamente.
