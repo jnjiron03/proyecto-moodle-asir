@@ -26,7 +26,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 04 | [Implantación del servidor web Apache](#reto-04--implantación-del-servidor-web-apache) | ✅ Completado |
 | 05 | [Instalación del entorno PHP para la plataforma LMS](#reto-05--instalación-del-entorno-php-para-la-plataforma-lms) | ✅ Completado |
 | 06 | [Implantación y securización inicial de MariaDB](#reto-06--implantación-y-securización-inicial-de-mariadb) |✅ Completado |
-| 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ⏳ Pendiente |
+| 07 | [Creación y configuración de la base de datos corporativa del LMS](#reto-07--creación-y-configuración-de-la-base-de-datos-corporativa-del-lms) | ✅ Completado|
 | 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ⏳ Pendiente |
 | 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ⏳ Pendiente |
 | 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ⏳ Pendiente |
@@ -816,10 +816,130 @@ mysql --version
 - [x] Puerto 3306 activo y escuchando correctamente.
 
 ---
-
 ## Reto 07 — Creación y configuración de la base de datos corporativa del LMS
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con MariaDB instalado y securizado, el siguiente paso es preparar la estructura SQL que utilizará Moodle. En lugar de usar la cuenta root para la aplicación, creo un usuario dedicado `moodle_user` con permisos únicamente sobre la base de datos `moodle_db`. Esta práctica sigue el principio de mínimo privilegio y es fundamental en cualquier entorno de administración profesional.
+
+### Objetivos
+
+- Crear la base de datos `moodle_db` en MariaDB.
+- Crear el usuario `moodle_user` con contraseña segura.
+- Asignar permisos exclusivos sobre `moodle_db`.
+- Verificar que el usuario puede autenticarse y acceder correctamente.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| Servidor | Ubuntu Server 22.04 LTS |
+| IP del servidor | 192.168.1.13 |
+| Motor de base de datos | MariaDB |
+| Base de datos | `moodle_db` |
+| Usuario LMS | `moodle_user` |
+
+### Desarrollo
+
+#### Acceso al entorno de administración MariaDB
+
+Accedo al motor de base de datos con el usuario root:
+
+```bash
+sudo mysql -u root -p
+```
+
+El prompt cambia a `MariaDB [(none)]>`, indicando que estoy dentro del entorno SQL.
+
+![Figura 1 — Acceso al entorno de administración MariaDB](imagenes/reto-07/figura-01.png)
+
+*Figura 1 — Acceso al entorno de administración MariaDB.*
+
+#### Creación de la base de datos
+
+Creo la base de datos con codificación UTF-8 para garantizar compatibilidad completa con Moodle y sus contenidos multilingües:
+
+```sql
+CREATE DATABASE moodle_db CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+```
+
+Verifico que se ha creado correctamente:
+
+```sql
+SHOW DATABASES;
+```
+
+![Figura 2 — Base de datos moodle_db creada correctamente](imagenes/reto-07/figura-02.png)
+
+*Figura 2 — Base de datos `moodle_db` creada correctamente.*
+
+#### Creación del usuario exclusivo del LMS y asignación de privilegios
+
+Creo el usuario `moodle_user` con acceso únicamente desde localhost, siguiendo el principio de mínimo privilegio:
+
+```sql
+CREATE USER 'moodle_user'@'localhost' IDENTIFIED BY 'TuContraseñaSegura';
+```
+
+Asigno todos los permisos necesarios exclusivamente sobre `moodle_db` y actualizo la tabla de privilegios:
+
+```sql
+GRANT ALL PRIVILEGES ON moodle_db.* TO 'moodle_user'@'localhost';
+FLUSH PRIVILEGES;
+```
+
+![Figura 3 — Creación de moodle_user y asignación de privilegios sobre moodle_db](imagenes/reto-07/figura-03.png)
+
+*Figura 3 — Creación de `moodle_user` y asignación de privilegios sobre `moodle_db`.*
+
+#### Verificación de permisos del usuario
+
+Compruebo que los permisos se han asignado correctamente:
+
+```sql
+SHOW GRANTS FOR 'moodle_user'@'localhost';
+```
+
+La salida muestra `GRANT ALL PRIVILEGES ON moodle_db.*`, confirmando que el usuario solo tiene permisos sobre esa base de datos. Salgo del entorno root:
+
+```sql
+EXIT;
+```
+
+![Figura 4 — Verificación de privilegios del usuario moodle_user](imagenes/reto-07/figura-04.png)
+
+*Figura 4 — Verificación de privilegios del usuario `moodle_user`.*
+
+#### Verificación del acceso con el nuevo usuario
+
+Accedo con las credenciales de `moodle_user` para confirmar que la autenticación funciona correctamente:
+
+```bash
+mysql -u moodle_user -p
+```
+
+Compruebo que solo tiene visibilidad sobre `moodle_db`:
+
+```sql
+SHOW DATABASES;
+EXIT;
+```
+
+Solo aparecen `moodle_db` e `information_schema`, confirmando que el usuario no tiene acceso a otras bases de datos del sistema.
+
+![Figura 5 — Acceso verificado con moodle_user y permisos limitados correctamente](imagenes/reto-07/figura-05.png)
+
+*Figura 5 — Acceso verificado con `moodle_user` y permisos limitados correctamente.*
+
+### Comprobaciones finales
+
+- [x] Base de datos `moodle_db` creada con codificación `utf8mb4`.
+- [x] Usuario `moodle_user` creado con acceso solo desde `localhost`.
+- [x] Privilegios completos asignados exclusivamente sobre `moodle_db`.
+- [x] `FLUSH PRIVILEGES` ejecutado correctamente.
+- [x] `SHOW GRANTS` confirma permisos correctos.
+- [x] Acceso verificado con `moodle_user` desde terminal.
+- [x] `moodle_user` no tiene visibilidad sobre otras bases de datos del sistema.
 
 ---
 
