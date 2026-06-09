@@ -30,7 +30,7 @@ El objetivo principal no es únicamente instalar Moodle, sino comprender cómo s
 | 08 | [Configuración de resolución de nombres local para el LMS corporativo](#reto-08--configuración-de-resolución-de-nombres-local-para-el-lms-corporativo) | ✅ Completado |
 | 09 | [Despliegue y preparación de la estructura del LMS corporativo](#reto-09--despliegue-y-preparación-de-la-estructura-del-lms-corporativo) | ✅ Completado |
 | 10 | [Instalación lógica y configuración inicial de Moodle](#reto-10--instalación-lógica-y-configuración-inicial-de-moodle) | ✅ Completado |
-| 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ⏳ Pendiente |
+| 11 | [Administración inicial y configuración corporativa del LMS](#reto-11--administración-inicial-y-configuración-corporativa-del-lms) | ✅ Completado|
 | 12 | [Gestión corporativa de usuarios, roles y permisos en Moodle](#reto-12--gestión-corporativa-de-usuarios-roles-y-permisos-en-moodle) | ⏳ Pendiente |
 | 13 | [Creación y organización del entorno formativo corporativo](#reto-13--creación-y-organización-del-entorno-formativo-corporativo) | ⏳ Pendiente |
 | 14 | [Hardening y buenas prácticas básicas de seguridad del servidor LMS](#reto-14--hardening-y-buenas-prácticas-básicas-de-seguridad-del-servidor-lms) | ⏳ Pendiente |
@@ -1310,10 +1310,93 @@ Tras completar la configuración básica del sitio con el nombre `CodeArts Solut
 - [x] Panel principal de Moodle accesible desde `http://moodle.local`.
 
 ---
-
 ## Reto 11 — Administración inicial y configuración corporativa del LMS
 
-> ⏳ *Pendiente de realización.*
+### Introducción
+
+Con Moodle instalado y operativo, en este reto realizo la configuración administrativa base de la plataforma para adaptarla al entorno corporativo de CodeArts Solutions. Configuro el nombre del sitio, el idioma principal, la zona horaria y la portada, dejando el LMS listo para comenzar la gestión de usuarios y contenidos en los retos siguientes.
+
+### Objetivos
+
+- Acceder al panel de administración de Moodle.
+- Configurar el nombre completo y corto del sitio.
+- Establecer el idioma principal en Español Internacional.
+- Configurar la zona horaria del servidor.
+- Personalizar la portada del LMS.
+
+### Material utilizado
+
+| Elemento | Detalle |
+|---|---|
+| URL del LMS | `http://moodle.local` |
+| Nombre del sitio | `CodeArts LMS` |
+| Nombre corto | `CodeArts` |
+| Idioma principal | Español - Internacional |
+| Zona horaria | Europe/Madrid |
+
+### Desarrollo
+
+#### Acceso al panel de administración
+
+Accedo a `http://moodle.local` e inicio sesión con la cuenta administradora. Desde el menú superior accedo a **Administración del sitio** donde se muestran todas las secciones de configuración: General, Users, Courses, Grades, Plugins, Appearance, Server, Reports y Development.
+
+![Figura 1 — Panel principal de administración de Moodle](imagenes/reto-11/figura-01.png)
+
+*Figura 1 — Panel principal de administración de Moodle.*
+
+#### Configuración del nombre del sitio e idioma principal
+
+Desde **Administración del sitio → General → Ajustes generales** configuro los campos obligatorios del proyecto:
+
+| Campo | Valor |
+|---|---|
+| Nombre completo del sitio | `CodeArts LMS` |
+| Nombre corto del sitio | `CodeArts` |
+| Idioma por defecto | `Español - Internacional (es)` |
+| Zona horaria por defecto | `Europe/Madrid` |
+
+Guardo los cambios con **Guardar cambios**.
+
+![Figura 2 — Nombre del sitio e idioma configurados en los ajustes generales](imagenes/reto-11/figura-02.png)
+
+*Figura 2 — Nombre del sitio e idioma configurados en los ajustes generales.*
+
+#### Instalación del paquete de idioma español
+
+Accedo a **Administración del sitio → Idioma → Paquetes de idioma**, selecciono **Español - Internacional (es)** y hago clic en **Instalar paquetes de idioma seleccionados**. Tras la instalación lo establezco como idioma por defecto en los ajustes generales.
+
+![Figura 3 — Configuración del idioma principal del LMS](imagenes/reto-11/figura-03.png)
+
+*Figura 3 — Configuración del idioma principal del LMS.*
+
+#### Revisión de ajustes generales del LMS
+
+Desde **Administración del sitio → General → Ajustes generales** reviso y configuro los parámetros regionales del entorno corporativo:
+
+- **Zona horaria del servidor:** `Europe/Madrid`
+- **País por defecto:** `Spain`
+- **Resumen del sitio:** `Plataforma de formación interna de CodeArts Solutions`
+
+![Figura 4 — Ajustes generales del LMS configurados](imagenes/reto-11/figura-04.png)
+
+*Figura 4 — Ajustes generales del LMS configurados.*
+
+#### Personalización de la portada
+
+Accedo a **Administración del sitio → Portada → Ajustes de la portada** y configuro la descripción corporativa del LMS. Verifico que la portada se muestra correctamente navegando a `http://moodle.local`.
+
+![Figura 5 — Portada del LMS personalizada](imagenes/reto-11/figura-05.png)
+
+*Figura 5 — Portada del LMS personalizada.*
+
+### Comprobaciones finales
+
+- [x] Acceso al panel de administración sin errores.
+- [x] Nombre del sitio configurado como `CodeArts LMS` / `CodeArts`.
+- [x] Idioma principal establecido en Español Internacional.
+- [x] Zona horaria configurada como `Europe/Madrid`.
+- [x] País por defecto establecido como Spain.
+- [x] Portada del LMS personalizada y visible.
 
 ---
 
